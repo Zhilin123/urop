@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous" type='text/css'>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Log in</title>
+    <style type="text/css">
+        #main-header{
+          text-align: center;
+          color: #cc0000;
+          padding:10px;
+          font-weight: bold;
+          font-family: Impact, Charcoal, sans-serif;
+        }
+
+        .window{
+          padding: 10px;
+          text-align: left;
+          width: 40%;
+          align: center;
+          margin: auto;
+        }
+
+        .error {
+          background-color: #bec4ce;
+          color: #cc0000;
+          padding: 10px;
+        }
+    </style>
+  </head>
+
+  <body>
+    <!-- Alternative Title -->
+    <div class="display-3" style="text-align: center;">
+      <p>Are you ready for it?</p>
+    </div>
+
+    <!-- Original Red Fat Title -->
+  <!--  <div class="display-2" id = "main-header">
+      <p>Are you ready for this?</p>
+    </div> -->
+
+
+    <!-- form for login -->
+   <div class="window">
+     {% block body %}
+     <h3>Login</h3>
+    <!-- {% if session['logged_in'] %}
+     <p>You're logged in already!</p>
+     <form action="/login" method="post">
+       <button type="submit" name="logout" value="logout" class="btn btn-info">Log out</button>
+     </form>
+     {% else %} -->
+     <form action="/login" method="post">
+       {% if error %}
+        <p class="error"><strong>Error: {{ error }} </strong>
+       {% endif %}
+      <div  class="form-group">
+         <label for="username" >Username</label>
+         <input type="username" name="username" class="form-control" placeholder="Username" required>
+      </div>
+      <div  class="form-group">
+         <label for="password">Password</label>
+         <input type="password" name="password" class="form-control" placeholder="Password" required>
+      </div>
+      <br>
+         <input type="submit" value="Log in" class="btn btn-info btn-block">
+     </form>
+     <br>
+      <p> Don't have an account? <a href="/register">Register NOW!</a></p>
+  <!--   {% endif %}  -->
+     {% endblock %}
+   </div>
+  </body>
+</html>

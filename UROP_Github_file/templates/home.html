@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8">
+    <title>Numeracy app</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous" type='text/css'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <style media="screen">
+      .ul{
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .dummy {
+        margin-top: 100%;
+      }
+
+      .thumbnail {
+      position: absolute;
+      top: 15px;
+      bottom: 0;
+      left: 15px;
+      right: 0;
+      text-align:center;
+      padding-top:calc(50% - 30px);
+      }
+
+      .jumbotron{
+        height: 20px;
+      }
+
+      .jumbotron >li{
+        margin-top: -10px;
+      }
+
+      button {
+        border: 2px solid black;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      p {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+ {% block body %}
+    {% if session['logged_in'] %}
+    <div>
+      <p>Hello {{session['username']}}! Welcome Back!
+        <form action="/" method="post">
+          <button type="submit" name="logout" value="logout" class="btn btn-info">Log out</button>
+        </form>
+      </p>
+   </div>
+    {% else %}
+    <p>Please <a href="/login">Log in/Register</a></p>
+    {% endif %}
+<!--
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class=flashes>
+         {% for category, message in messages %}
+          <p class="{{ category }}">{{ message }}</p>
+         {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+  -->
+    <div class="display-3" style="text-align: center;">
+      <p>Numeracy App</p>
+    </div>
+    <ul class="ul">
+      <div class="jumbotron text-center" onclick="clk0()">
+        <li>
+          Let's get started
+          <p style="font-size:10px"> By clicking, I consent for my data to be used for research purposes </p>
+        </li>
+      </div>
+      <script type="text/javascript">
+        function clk0(){
+          $( "#continuewhereyouleft" ).toggle("blind")
+        }
+      </script>
+      <div id="continuewhereyouleft" class="" style="display:none">
+        <div class="container">
+          <p> Continue where you left off? <button onclick="window.location.href='/question/1'"> yes </button> <br/> <button onclick="window.location.href='/question/1'"> no </button> </p>
+        </div>
+      </div>
+      <div class="jumbotron text-center" onclick="clk2()">
+        <li>My Profile</li>
+      </div>
+      <div id="proj" class="" style="display:none">
+        <div class="container">
+          <p> This is something about the user</p>
+          <p> ie data they registered, number of qns attempted, number of correct answers</p>
+          <button> close my account </button>
+        </div>
+      </div>
+      <script type="text/javascript">
+        function clk2(){
+          $( "#proj" ).toggle("blind")
+        }
+      </script>
+      <div class="jumbotron text-center" onclick="clk1()">
+        <li>About</li>
+      </div>
+      <div id="atg" class="" style="display:none">
+        <div class="container">
+          <p>About the project / Contact Us</p>
+        </div>
+      </div>
+      <script type="text/javascript">
+        function clk1(){
+          $( "#atg" ).toggle("blind")
+        }
+      </script>
+
+
+    </ul>
+
+<!--
+    <div class="container">
+	    <div class="row">
+        <div class="col-md-3 col-sm-4 col-xs-6">
+          <div class="dummy"></div>
+          <a href="#x" class="thumbnail purple">Homepage</a>
+        </div>
+        <div class="col-md-3 col-sm-4 col-xs-6">
+          <div class="dummy"></div>
+          <a href="#x" class="thumbnail purple">View Profile</a>
+        </div>
+        <div class="col-md-3 col-sm-4 col-xs-6">
+          <div class="dummy"></div>
+          <a href="#x" class="thumbnail purple">Something<br>2 lines</a>
+  	   </div>
+         <div class="col-md-3 col-sm-4 col-xs-6">
+          <div class="dummy"></div>
+          <a href="#x" class="thumbnail purple">Something 2 lines</a>
+  	   </div>
+     </div>
+   </div>
+ -->
+    {% endblock %}
+  </body>
+</html>

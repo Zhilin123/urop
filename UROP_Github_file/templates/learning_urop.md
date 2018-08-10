@@ -1,0 +1,62 @@
+<!-- NOTES ON LEARNING -->
+-!! Put all html files in folder: templates.
+-!! Put all images file in static
+- Block level and Inline level elements:
+   -> Block level: start a new line and take full width eg. <div>, <h1>-<h6>, <p>, <form> which start a new block everytime
+   -> Inline level: do not start on a new line, and take only the necessary width eg. <span>, <imag> which doesnt start a new Block
+- Use tags to indicate which part is which part
+- semantic tag: inline, can change in html and/or css. Eg, <strong> or <em> which are semantic tags in html BUT can modify the defalt meaning in css
+- <a> tag: add an attribute, eg. a link to another page with attribute "href"
+- open up a new tab: add after the href: target = "_blank"
+- all tags can have attributes which provide information about an elemnet placed within the tag. Can use id.
+
+-tags:
+  -> <br> break from the previous Block
+  -> <hr> horizontal line separating things from above block
+  -> <div> block element that starts from another Inline
+  -> <input> the input area
+      -! input can have different type attribute to check the format of the input
+      -! placeholder: for prompt
+      -! type = submit: meaning the type is a submit button
+  -> <textarea>: free text textarea
+  -> <select>: dropdown menu
+  -> <option>: the options under dropdown menus
+  -> <img src = "path/asd.jpg" alt="My Sample Image">
+- HTML file is a webpage file which can be clicked and run straight away. HOWEVER, it's just a static file that does not connect to the server
+- HTML semantic tags:
+  -> <header>
+  -> <footer>
+  -> <aside>
+  -> <main>
+  -> <article>
+  -> <nav>
+  -> <section>
+  -> <details>
+- Give id to the sections/headers/blahblah coz there may be more than one section
+- id: unique for every section (use # for css identification)
+- class: can be re-used for many sections (use . for css identification)
+- html cannot put logic, but jinja file with extension of html can have logic
+- jinja's logic and syntax is very similar to python
+- use type and various attributes of the input of the form to set the restriction
+- html is for static presentation of the information on the web, while javascript is for interaction between front-end web browser and the users. When applied to an HTML document, JS can provide dynamic interactivity on websites.
+- both JS and CSS can be built into html file
+- javascript library/framework: react
+- bootstrap: overall for everything
+- sketch: image editor
+- ORM library: database
+- sqlite: lighter version of SQL, inbuilt-library in python for database building --> in sqlite, the whole databse will be a single file, ie. many many tables in a single file (it's not like a flat file)
+- <script> tag give the space for javascript codes
+- document object represents the whole page for scripts
+- can use javascript to change the content in html by using innerHTML() function
+- we can parse variable from python to html(have dynamic contain in python and display them on html)
+- put the link of the bootstrap within the header tag
+- grab the variable from the html input in python by setting the variable name in python!
+- OMFG validator does EVERYTHING for you man!!! Why does python have such AMAZING library!!!
+- Do not hardcode html for every page man! Imagine how much you need to change when you want to change one feature of it!
+  Code one page and just use variables which are different for all pages!
+- SQLite, a database engine that a DBMS uses as underlying software to make CRUD operations from database/A database engine is the underlying system that a database uses to function.
+- SQLite is like MySQL and SQL Server, which are all database engines, while SQL is a query language used in these databases.
+- SQL can be used for database query in different programming languages with different syntaxes
+- session in Flask is a dictionary.
+- understand the magic behind Message Flashing!!
+- use session to store information for each user
