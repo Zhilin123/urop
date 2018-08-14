@@ -42,6 +42,17 @@ TO DO:
         button {
           background-color:lightgrey;
         }
+
+        tr {
+          text-align:right;
+        }
+
+        table {
+          border-spacing: 5px;
+          margin-left: auto;
+          margin-right: auto;
+          border-collapse: separate;
+        }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script type="text/javascript">
@@ -80,13 +91,18 @@ TO DO:
     <form id="form1" method="post" class="jumbotron text-center" style="background-color: white;">
       <p>Question {{ question_id }} </p>
       <div id="question" style="display:inline-block;">{{tuple_of_qn[1]}}</div>
-      {% if (tuple_of_qn[-1] != "NA "  and tuple_of_qn[-1] != "NA") %}
+      {% if (tuple_of_qn[-2] != "NA "  and tuple_of_qn[-2] != "NA") %}
         <br>
-        <img src="../static/images/{{tuple_of_qn[-1]}}.png" width="100%">
+        <img src="../static/images/{{tuple_of_qn[-2]}}.png" width="100%">
+        <br>
+      {% endif %}
+      {% if (tuple_of_qn[-1] != ""  and tuple_of_qn[-1] != " ") %}
+        <br>
+          <div id="question_table">{{tuple_of_qn[-1] | safe}}</div>
         <br>
       {% endif %}
       <br>
-      <button id="sendhelp" type = "button" onclick="$('#hintvideo').toggle()"> Hint </button>
+      <button id="sendhelp" type = "button" onclick="$('#hintvideo').toggle();set_used_hint();"> Hint </button>
       <button id="translate_chinese" type = "button"> 中文 </button>
       <br>
       <br>
@@ -155,6 +171,8 @@ TO DO:
 
       <script>
         var translated = 0;
+        var used_translate = "0";
+        var used_hint = "0";
         var question_english = document.getElementById("question").textContent;
         function getKeyByValue(object, value) {
           return Object.keys(object).find(key => object[key] === value);
@@ -169,6 +187,7 @@ TO DO:
           if (translated == 0) {
             document.getElementById("question").textContent = translate_list[0][question_english];
             document.getElementById("translate_chinese").textContent = "English";
+            used_translate = "1";
             for (var $i = 0; $i<alloptions.length; $i++) {
               alloptions[$i].textContent = translate_list[0][all_choices[$i]];
             }
@@ -178,6 +197,10 @@ TO DO:
               alloptions[$i].textContent = translate_list[0][ranstring];
             }
             */
+            if ({{tuple_of_qn[0]}} == "9"){
+              document.getElementById("question_table").innerHTML = "<table id='question9'> <tr> <td>竞赛者</td> <td>拉希姆</td> <td>高拉夫</td> </tr> <tr> <td>回合 1</td> <td>125</td> <td>100</td> </tr> <tr> <td>回合 2</td> <td>125</td> <td>125</td> </tr> <tr> <td>回合 3</td> <td>150</td> <td>100</td> </tr> <tr> <td>回合 4</td> <td>50</td> <td>150</td> </tr> </table> <style> #question9 td, #question9 { border: 0.05px solid black; border-spacing: 0px; } #question9 td { padding:5px; } </style>";
+              console.log("yes");
+            }
             translated = 1;
           } else {
             var question_chinese = document.getElementById("question").textContent;
@@ -187,6 +210,7 @@ TO DO:
             for (var $i = 0; $i<alloptions.length; $i++) {
               alloptions[$i].innerHTML = add_highlighted_keywords(all_choices[$i]);
             }
+            document.getElementById("question_table").innerHTML = "{{tuple_of_qn[-1] | safe}}";
             popup_for_clicked();
             /*
             var alloptions = document.getElementsByTagName("option");
@@ -219,6 +243,7 @@ TO DO:
           "object":"a thing aimed at or sought; a goal"
         }
         var actual_question1 = "{{tuple_of_qn[1]}}";
+        var used_definition = "0";
         function add_highlighted_keywords (actual_question) {
           var question_words_list = actual_question.split(" ");
           for (var $i = 0; $i < question_words_list.length; $i++) {
@@ -251,6 +276,7 @@ TO DO:
         */
         function popup_for_clicked() {
           $('.highlighted').click(function() {
+              used_definition = "1";
               var message = $(this).attr('data-value');
               var whole = "<p><b> meaning </b></p>";
               var message1 = whole.concat(message);
@@ -263,7 +289,9 @@ TO DO:
           });
         }
         popup_for_clicked();
-
+        function set_used_hint(){
+          used_hint = "1";
+        }
       </script>
       <style>
       .highlighted {
@@ -290,9 +318,18 @@ TO DO:
         }
       </script>
       -->
-
-    <button type="submit" form="form1" value="Submit">Submit</button>
+    <input id ="used_hint" name="used_hint" style = "display:none;">
+    <input id = "used_translate" name ="used_translate" style = "display:none;">
+    <input id = "used_definition" name = "used_definition" style = "display:none;">
+    <button id="submit" type="submit" form="form1" value="Submit">Submit</button>
     </form>
+    <script>
+      document.getElementById("submit").onclick = function() {
+        document.getElementById("used_hint").value = used_hint;
+        document.getElementById("used_translate").value = used_translate;
+        document.getElementById("used_definition").value = used_definition;
+      }
+    </script>
     {% endif %}
     {% endblock %}
   </body>

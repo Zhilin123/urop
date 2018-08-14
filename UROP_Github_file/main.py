@@ -128,10 +128,16 @@ def question(qn):
         return render_template('mindmap.html', question_id = qn, tuple_of_qn = allquestions[int(qn)-1])
     else:
         if 'user_input' not in session:
-            session['user_input'] = [0 for i in range(max_qn+1)]
+            session['user_input'] = [0 for i in range(max_qn*4+1)]
         current_user = session['username']
         car = request.form.get("cars")
         session['user_input'][int(qn)-1] = car
+        hinted = request.form.get("used_hint")
+        session['user_input'][int(qn)+max_qn-1] = hinted
+        translated = request.form.get("used_translate")
+        session['user_input'][int(qn)+max_qn+max_qn-1] = translated
+        definition = request.form.get("used_definition")
+        session['user_input'][int(qn)+max_qn+max_qn+max_qn-1] = definition    
         current_qn = int(qn) + 1
         flash(str(session['user_input']))
         if current_qn > max_qn:
@@ -140,7 +146,9 @@ def question(qn):
             session['user_input'][-1] = current_user #since task needs to have current_user at the last place to input into the SQL query, 
             task = tuple(session['user_input'])
             #return str(task)
-            u_db.inser_user_input(task)
+            #u_db.inser_user_input(task)
+            #insert into attempts table
+            u_db.inser_input_attempts(task)
             # session['user_input'] is a list of 10 strings
             score = 0
             for i in range(max_qn):

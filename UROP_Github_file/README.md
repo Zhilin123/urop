@@ -17,10 +17,17 @@ Tasks done by Week 5
         - for now, chinese is used for demo because its the only other language I can read
 
 Tasks to do:
-
+- convert some images into html table elements etc (ie question 1, 2 and more )
+- improve logging (log use of hints and translation)
 - include more questions into the database
     - free resources available online?
+    - classify questions based on topics
+    - automate suggesting hints based on question type
     - some questions from collaborators?
+- change logging to per question basis, including session id
+- allow student to pick up from previously attempted question
+- front end user profile
+- create a page where users can just upload questions
 - Pack more pedagogically significant features into the webapp
     - maybe having questions sorted into categories for easy practice
     - make it into a gamified environment
@@ -28,3 +35,7 @@ Tasks to do:
     - make it into a companion website for their textbook / popularly used learning resources so that they can consult the website when they encounter difficulties with learning on their textbook.
 - Convert the website into a phone app that can be used offline (a bit of this)
 - Awaiting feedback from collaborator as well as supervisors
+
+Notes
+
+- when uploading to pythonanywhere, copy the users.db and qns.db to the root folder, for some reason, it doesn't work in the child folder
