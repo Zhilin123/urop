@@ -15,10 +15,11 @@ Tasks done by Week 5
     - users can click on difficult words to find out their definitions
     - users can translate into different languages such as indian languages
         - for now, chinese is used for demo because its the only other language I can read
-
-Tasks to do:
 - convert some images into html table elements etc (ie question 1, 2 and more )
 - improve logging (log use of hints and translation)
+
+Tasks to do:
+
 - include more questions into the database
     - free resources available online?
     - classify questions based on topics
