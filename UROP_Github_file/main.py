@@ -15,14 +15,7 @@ import json
 
 app = Flask(__name__)
 app.secret_key = os.urandom(12) #need this for session to work
-'''
-Problems yet to be solved:
-  # - insert the score into the correct username
-  # - debug session['user_input'] ---> use "flash" ????????MAGIC?????
-   - the duration of session
-  # - logout 
-   - homepage design
-'''
+
 max_qn = 9
 @app.route('/', methods=['POST', 'GET'])
 def home(): 
@@ -33,7 +26,30 @@ def home():
           session['logged_in'] = False
                 #flash('You are logged out now!')
           return redirect(url_for('home'))
-    return render_template('home.html')
+    
+    try:
+        current_user = session['username']
+        last_qn_attempted = u_db.retrieve_last_single_attempt(current_user)
+        category = last_qn_attempted [-4]
+        category_id = last_qn_attempted [-1] +1 
+        newquestions = qn_db.new_qn_retrieval(category)
+        if category_id > len(newquestions):
+            category_id = 1 
+        if category == 'none':
+            category = 'newquestion'
+        last_session_id = str(u_db.retrieve_last_session_id(current_user))
+        total_attempted_last_session, number_correct_last_session = u_db.retrieve_score_of_last_session(last_session_id)
+        total_number_of_questions = qn_db.check_total_number_of_questions()
+        total_attempted,total_correct = u_db.retrieve_total_attempted_qns_and_correct(current_user)
+        user_info = [total_attempted_last_session, number_correct_last_session,total_attempted,total_correct,total_number_of_questions]
+        u_db.insert_or_update_score(current_user)
+        topscore5 =u_db.get_top_5_scores()
+        show_results = request.args.get('show_results')
+        finished_all = request.args.get('finished_all')
+        return render_template('home.html', category=category, category_id =category_id, user_info = user_info,topscore5 = topscore5, show_results=show_results, finished_all = finished_all)
+    except:
+        topscore5 =u_db.get_top_5_scores()
+        return render_template('home.html', category="NA", category_id = "NA", user_info = None,topscore5 = topscore5, show_results=None, finished_all = None)
 
 @app.route('/login', methods=['POST', 'GET'])
 def do_admin_login():
@@ -162,8 +178,85 @@ def question(qn):
 
 
 
+@app.route('/newquestion/<qn>', methods=['GET', 'POST'])
+def new_question(qn):
+    newquestions = qn_db.new_qn_retrieval()
+    difficulty_levels = [[],[]]
+    category = 'none'
+    for i in range(len(newquestions)):
+        if newquestions[i][4] not in difficulty_levels[0]:
+            difficulty_levels[0].append(newquestions[i][4])
+            difficulty_levels[1].append(i+1)
+    if request.method == 'GET':
+        return render_template('newmindmap.html', question_id = qn, tuple_of_qn = newquestions[int(qn)-1],difficulty_levels = difficulty_levels,category = 'none', check_answer = 'none', max_qn_number = len(newquestions))
+    else:
+        current_user = session['username']
+        car = request.form.get("cars")
+        hinted = request.form.get("used_hint")
+        translated = request.form.get("used_translate")
+        definition = request.form.get("used_definition")
+        checking = request.form.get("check_answer")
+        #one_session_id = session['one_session_id']
+        if checking == "yes":
+            accepted_ans = qn_db.accepted_answers(newquestions[int(qn)-1][2])
+            check_answer = qn_db.check_if_answer_is_correct(accepted_ans, car)
+            return render_template('newmindmap.html', question_id = qn, tuple_of_qn = newquestions[int(qn)-1],difficulty_levels = difficulty_levels,category = 'none', check_answer = check_answer, max_qn_number = len(newquestions))
+        else:
+            if 'one_session_id' not in session:
+                u_db.insert_one_session((current_user,))
+                session['one_session_id'] = u_db.retrieve_last_session_id(current_user)
+            one_session_id = session['one_session_id']
+            questionid = newquestions[int(qn)-1][0]
+            accepted_ans = qn_db.accepted_answers(newquestions[int(qn)-1][2])
+            correct_or_not = qn_db.check_answer_true_false(accepted_ans, car)
+            #qnid, answer, hint, translate, definition, email
+            u_db.inser_input_one_attempt(tuple([questionid, qn, car, correct_or_not, hinted, translated, definition,category, one_session_id, current_user]))
+            current_qn = int(qn) + 1
+            if current_qn < len(newquestions):
+                return redirect('/newquestion/' + str(current_qn))
+            else:
+                return redirect('/?finished_all=true')
+
+@app.route('/<category>/<qn>', methods=['GET','POST'])
+def category(category,qn):
+    newquestions = qn_db.new_qn_retrieval(category)
+    difficulty_levels = [[],[]]
+    for i in range(len(newquestions)):
+        if newquestions[i][4] not in difficulty_levels[0]:
+            difficulty_levels[0].append(newquestions[i][4])
+            difficulty_levels[1].append(i+1)
+        
+    if request.method == 'GET':
+        return render_template('newmindmap.html', question_id = qn, tuple_of_qn = newquestions[int(qn)-1],difficulty_levels = difficulty_levels,category = category, check_answer = 'none', max_qn_number = len(newquestions))
+    else:
+        current_user = session['username']
+        car = request.form.get("cars")
+        hinted = request.form.get("used_hint")
+        translated = request.form.get("used_translate")
+        definition = request.form.get("used_definition")
+        checking = request.form.get("check_answer")
+        if checking == "yes":
+            accepted_ans = qn_db.accepted_answers(newquestions[int(qn)-1][2])
+            check_answer = qn_db.check_if_answer_is_correct(accepted_ans, car)
+            return render_template('newmindmap.html', question_id = qn, tuple_of_qn = newquestions[int(qn)-1],difficulty_levels = difficulty_levels,category = 'none', check_answer = check_answer, max_qn_number = len(newquestions))
+        else:
+            if 'one_session_id' not in session:
+                u_db.insert_one_session((current_user,))
+                session['one_session_id'] = u_db.retrieve_last_session_id(current_user)
+            one_session_id = session['one_session_id']
+            accepted_ans = qn_db.accepted_answers(newquestions[int(qn)-1][2])
+            correct_or_not = qn_db.check_answer_true_false(accepted_ans, car)
+            questionid = newquestions[int(qn)-1][0]
+            #qnid, answer, hint, translate, definition, email
+            u_db.inser_input_one_attempt(tuple([questionid, qn, car, correct_or_not, hinted, translated, definition,category, one_session_id, current_user]))
+            current_qn = int(qn) + 1
+            if current_qn < len(newquestions):
+                return redirect('/' + category + '/' + str(current_qn))
+            else:
+                return redirect('/?finished_all=true')
+
 
 if __name__ == "__main__":
     
-    app.run(debug=True, port=4002)
+    app.run(debug=True, port=4004)
 

@@ -46,16 +46,23 @@
       p {
         text-align: center;
       }
+
+      table {
+        text-align: center;
+        border-collapse: separate;
+        border-spacing: 50px 0;
+      }
     </style>
   </head>
   <body>
  {% block body %}
     {% if session['logged_in'] %}
     <div>
-      <p>Hello {{session['username']}}! Welcome Back!
+      <p>
         <form action="/" method="post">
-          <button type="submit" name="logout" value="logout" class="btn btn-info">Log out</button>
+          <button type="submit" name="logout" value="logout" class="btn btn-info" style="float:right;">Log out</button>
         </form>
+        Hello {{session['username']}}! Welcome Back!
       </p>
    </div>
     {% else %}
@@ -72,14 +79,26 @@
       {% endif %}
     {% endwith %}
   -->
+    {% if finished_all != None %}
+    <p> Congrats on finishing all of the questions in that category! Check out how you did below or try another category. </p>
+    <script>
+      $('#proj1').click();
+    </script>
+    {% endif%}
     <div class="display-3" style="text-align: center;">
       <p>Numeracy App</p>
     </div>
     <ul class="ul">
+      <div class="jumbotron text-center" onclick="window.location.href='/question/1'">
+        <li>
+          Playground
+          <p style="font-size:10px"> See what I can do! </p>
+        </li>
+      </div>
       <div class="jumbotron text-center" onclick="clk0()">
         <li>
           Let's get started
-          <p style="font-size:10px"> By clicking, I consent for my data to be used for research purposes </p>
+          <p style="font-size:10px"> By clicking, I consent for my data to be used for research </p>
         </li>
       </div>
       <script type="text/javascript">
@@ -89,17 +108,58 @@
       </script>
       <div id="continuewhereyouleft" class="" style="display:none">
         <div class="container">
-          <p> Continue where you left off? <button onclick="window.location.href='/question/1'"> yes </button> <br/> <button onclick="window.location.href='/question/1'"> no </button> </p>
+          <p> Continue where you left off?
+            {% if category == 'NA' %}
+            <button onclick="window.location.href='/newquestion/1'"> yes </button>
+            {% else %}
+            <button onclick="window.location.href='/{{category}}/{{category_id}}'"> yes </button>
+            {% endif %}
+            <br/>
+            <button onclick="window.location.href='/newquestion/1'"> no </button>
+          </p>
         </div>
       </div>
-      <div class="jumbotron text-center" onclick="clk2()">
+          <div class="jumbotron text-center" onclick="clk4()">
+            <li>Question categories</li>
+          </div>
+          <div id="categories" class="" style="display:none">
+            <div class="container">
+              <button onclick="clk6()"> All Questions </button>
+              <br>
+              <button onclick="clk5('one_variable')"> Single Variable </button>
+              <br>
+              <button onclick="clk5('one_variable_reciprocal')"> Single Variable (Reciprocals) </button>
+              <br>
+              <button onclick="clk5('two_variable')"> Two Variables </button>
+              <br>
+              <button onclick="clk5('two_variable_sequential')"> Two Variables (Solved sequentially)</button>
+              <br>
+              <button onclick="clk5('two_variable_reciprocal')"> Two Variables (Reciprocals)</button>
+            </div>
+          </div>
+          <script type="text/javascript">
+            function clk4(){
+              $( "#categories" ).toggle("blind")
+            }
+            function clk5(category) {
+              window.location.href='/' + category + '/1';
+            }
+            function clk6() {
+              window.location.href='/newquestion/1';
+            }
+          </script>
+      {% if user_info != None %}
+      <div id="proj1"class="jumbotron text-center" onclick="clk2()">
         <li>My Profile</li>
       </div>
       <div id="proj" class="" style="display:none">
         <div class="container">
-          <p> This is something about the user</p>
-          <p> ie data they registered, number of qns attempted, number of correct answers</p>
-          <button> close my account </button>
+          {% if show_results != None  or finished_all != None %}
+          <p> That was a fun session; check out how you did</p>
+          {% endif%}
+          <p>Last attempt: {{user_info[1]}} correct / {{user_info[0]}} attempted</p>
+          <p>Overall: {{user_info[3]}} correct / {{user_info[2]}} attempted</p>
+          <p> You have {{user_info[4] - user_info[3]}} questions to go! </p>
         </div>
       </div>
       <script type="text/javascript">
@@ -107,12 +167,41 @@
           $( "#proj" ).toggle("blind")
         }
       </script>
+      {% endif %}
+      <div class="jumbotron text-center" onclick="clk7()">
+        <li>How are my friends doing?</li>
+      </div>
+      <div id="leaderboard" class="" style="display:none">
+        <div class="container">
+          <table align="center">
+            <thead>
+              <th>Position</th>
+              <th>Name</th>
+              <th>Correct Answers</th>
+            </thead>
+            <tbody>
+              {% for i in topscore5 %}
+                <tr>
+                  <td>{{i[0]}}</td>
+                  <td>{{i[1]}}</td>
+                  <td>{{i[2]}}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <script type="text/javascript">
+        function clk7(){
+          $( "#leaderboard" ).toggle("blind")
+        }
+      </script>
       <div class="jumbotron text-center" onclick="clk1()">
         <li>About</li>
       </div>
       <div id="atg" class="" style="display:none">
         <div class="container">
-          <p>About the project / Contact Us</p>
+          <p>This web-app has been developed by Zhilin Wang in a project at the University of Cambridge funded by the Cambridge Language Sciences Incubator Fund. Other members of the project are Ianthi Tsimpli, Minati Panda and Andrew Caines. We are interested in the interaction between literacy and numeracy, and the potential benefits of scaffolding for learning. For further enquiries, please contact us at apc38(at)cam(dot)ac(dot)uk</p>
         </div>
       </div>
       <script type="text/javascript">
@@ -147,5 +236,15 @@
    </div>
  -->
     {% endblock %}
+    {% if show_results != None %}
+    <script>
+      $('#proj1').click();
+    </script>
+    {% endif%}
+    {% if finished_all != None %}
+    <script>
+      $('#proj1').click();
+    </script>
+    {% endif%}
   </body>
 </html>

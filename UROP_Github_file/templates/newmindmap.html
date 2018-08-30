@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<!--
+
+TO DO:
+
+1. Change select into radio (so that difficult words in options can be picked up as well
+ a. the actual change (done)
+ b. changing the way that python gets the answer (done)
+ c. changing the way translation works (done)
+2. Do javascript onclick event to show the value maybe through a div above the question image (done)
+3. Create a final done page to show the overall score
+4. Put this up on pythonanywhere so that the other supervisor can see
+5. Push to a new github directory and fill the readme with the key features that this has developed
+
+-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Question</title>
+
+    <!-- Bootstrap core CSS -->
+    <!--<link href="../static/Signin Template for Bootstrap_files/bootstrap.min.css" rel="stylesheet"> -->
+
+    <!-- Custom styles for this template -->
+    <!--
+    <link href="../static/Signin Template for Bootstrap_files/signin.css" rel="stylesheet">
+    <link rel="stylesheet" crossorigin="anonymous" href="../static/Signin Template for Bootstrap_files/main.css"> -->
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous" type='text/css'>
+    <style media="screen">
+        .oneoption {
+          display:block;
+        }
+
+        .option input {
+          float:left;
+        }
+
+        button {
+          background-color:lightgrey;
+        }
+
+        tr {
+          text-align:right;
+        }
+
+        table {
+          border-spacing: 5px;
+          margin-left: auto;
+          margin-right: auto;
+          border-collapse: separate;
+        }
+
+        a, figure {
+            display: inline-block;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="text/javascript">
+    var translate_list = [];
+    var translation_file = "../static/translation_1000_chinese.json";
+    //var translation_file = "../static/translation_1000_hindi.json";
+    //var translation_file = "../static/translation_1000_telugu.json";
+    $.getJSON(translation_file, function(data) {
+        translate_list.push(data);
+    });
+    //var translate_dict = translate1["responseJSON"];
+
+    </script>
+
+</head>
+
+  <body class="text-center">
+
+  {% block body %}
+<!--    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class=flashes>
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+-->
+    {% if not session['logged_in'] %}
+    <div class="display-3">
+      <p>You are not logged in </p>
+    </div>
+    <div class="display-3">
+      <p>Please <a href="/login">log in</a> and start the game :D</p>
+    </div>
+    {% else %}
+    <!-- <p> hello </p> -->
+    <form id="form1" method="post" class="jumbotron text-center" style="background-color: white;">
+      <p>Question {{ question_id }} </p>
+      <div id="question" style="display:inline-block;">{{tuple_of_qn[1]}}</div>
+      <br>
+      <p> Difficulty: {{tuple_of_qn[-3]}} </p>
+      {% if check_answer != 'none'%}
+      <p> Check answer: {{check_answer}} </p>
+      {% endif %}
+      <button id="sendhelp" type = "button" onclick="$('#hintvideo').toggle();set_used_hint();"> Hint </button>
+      <button id="translate_chinese" type = "button"> 中文 </button>
+      <br>
+      <br>
+      <p id="hintvideo" style="display:none;">
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/{{tuple_of_qn[-1]}}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </p>
+      <div id="meaning" style="display:none;"></div>
+      <span class = "choice_special">Answer: </span><input type="text" name="cars" placeholder="20 or 20, 50" required>
+
+      <script>
+        var translated = 0;
+        var used_translate = "0";
+        var used_hint = "0";
+        var question_english = document.getElementById("question").textContent;
+        function getKeyByValue(object, value) {
+          return Object.keys(object).find(key => object[key] === value);
+        }
+        var alloptions = document.getElementsByClassName("choice");
+        all_choices = [];
+        for (var $i = 0; $i<alloptions.length; $i++) {
+          var ranstring = alloptions[$i].textContent;
+          all_choices.push(ranstring);
+        }
+        document.getElementById("translate_chinese").onclick = function() {
+          if (translated == 0) {
+            document.getElementById("question").textContent = translate_list[0][question_english];
+            document.getElementById("translate_chinese").textContent = "English";
+            used_translate = "1";
+            for (var $i = 0; $i<alloptions.length; $i++) {
+              alloptions[$i].textContent = translate_list[0][all_choices[$i]];
+            }
+            /*
+            for (var $i = 0; $i<alloptions.length; $i++) {
+              var ranstring = alloptions[$i].textContent;
+              alloptions[$i].textContent = translate_list[0][ranstring];
+            }
+            */
+            if ({{tuple_of_qn[0]}} == "9"){
+              document.getElementById("question_table").innerHTML = "<table id='question9'> <tr> <td>竞赛者</td> <td>拉希姆</td> <td>高拉夫</td> </tr> <tr> <td>回合 1</td> <td>125</td> <td>100</td> </tr> <tr> <td>回合 2</td> <td>125</td> <td>125</td> </tr> <tr> <td>回合 3</td> <td>150</td> <td>100</td> </tr> <tr> <td>回合 4</td> <td>50</td> <td>150</td> </tr> </table> <style> #question9 td, #question9 { border: 0.05px solid black; border-spacing: 0px; } #question9 td { padding:5px; } </style>";
+              console.log("yes");
+            }
+            translated = 1;
+          } else {
+            var question_chinese = document.getElementById("question").textContent;
+            //document.getElementById("question").textContent = getKeyByValue(translate_list[0], question_chinese);
+            document.getElementById("question").innerHTML = add_highlighted_keywords(actual_question1);
+            var the_word_chinese = "中文"; // the chinese in chinese
+            //var the_word_chinese = "हिन्दी"; // the word hindi in hindi
+            //var the_word_chinese = "తెలుగు"; // the word telugu in telugu
+            document.getElementById("translate_chinese").textContent = the_word_chinese;
+            for (var $i = 0; $i<alloptions.length; $i++) {
+              alloptions[$i].innerHTML = add_highlighted_keywords(all_choices[$i]);
+            }
+            popup_for_clicked();
+            /*
+            var alloptions = document.getElementsByTagName("option");
+            for (var $i = 0; $i<alloptions.length; $i++) {
+              var ranstring = alloptions[$i].textContent;
+              alloptions[$i].textContent = getKeyByValue(translate_list[0], ranstring);
+            }
+            */
+            translated = 0;
+          }
+        }
+      </script>
+      <script>
+        var definition_dict_1 = [];
+        var filename = "../static/definition_1000.json";
+        $.getJSON(filename, function(data) {
+            definition_dict_1.push(data);
+            document.getElementById("question").innerHTML = add_highlighted_keywords(actual_question1);
+            popup_for_clicked();
+        });
+        var definition_dict = definition_dict_1[0];
+        /*
+        var definition_dict = {
+          "responses?": "a verbal or written answer",
+          "attentive": "watching someone or something closely; alert and vigilant.",
+          "subtraction" : "to remove something",
+          "mistakes" : "an act or judgement that is misguided or wrong.",
+          "symbol" : "a mark or character used as a conventional representation of an object, function, or process",
+          "mistook" : "be wrong about.",
+          "stacks": "to arrange things so that they are placed one on top of another",
+          "kerosene" : "a light fuel oil obtained by distilling petroleum, used especially in jet engines and domestic heating boilers; paraffin oil.",
+          "digit" : "any of the numerals from 0 to 9, especially when forming part of a number.",
+          "pattern": "a set of numbers or objects in which all the members are related with each other by a specific rule.",
+          "bazaar": "a market",
+          "shopkeeper" : " a person who sells things",
+          "calculate": " to determine mathematically",
+          "scale": "devices to measure weight",
+          "chart" : "a sheet of information in the form of a table, graph, or diagram.",
+          "object":"a thing aimed at or sought; a goal"
+        }
+        */
+        var actual_question1 = "{{tuple_of_qn[1]}}";
+        var used_definition = "0";
+        function add_highlighted_keywords (actual_question) {
+          var question_words_list = actual_question.split(" ");
+          for (var $i = 0; $i < question_words_list.length; $i++) {
+            if (question_words_list[$i] in definition_dict_1[0]) {
+              question_words_list[$i] = '<p class="highlighted" data-value=' + '"' + definition_dict_1[0][question_words_list[$i]]+'"' + '>' + question_words_list[$i] + '</p>' ;
+            }
+          }
+          var new_question = question_words_list.join(" ");
+          return new_question;
+        }
+
+        /*
+        for (var $i = 0; $i<alloptions.length; $i++) {
+          alloptions[$i].innerHTML = add_highlighted_keywords(all_choices[$i]);
+        }
+        */
+        /*
+
+        window.onload = function() {
+            var anchors = document.getElementsByClassName('highlighted');
+            for(var i = 0; i < anchors.length; i++) {
+                var anchor = anchors[i];
+                anchor.onclick = function() {
+                    console.log(anchor);
+                    var message = anchor.getAttribute("data-value");
+                    var whole = "<p> meaning </p>";
+                    var message1 = whole.concat(message);
+                    document.getElementById("meaning").innerHTML = message1;
+                }
+            }
+        }
+        */
+        function popup_for_clicked() {
+          $('.highlighted').click(function() {
+              used_definition = "1";
+              var message = $(this).attr('data-value');
+              var the_actual_word = $(this).text();
+              //var whole = "<p><b> meaning </b></p>";
+              var whole = "<p><b> " + the_actual_word + " </b></p>";
+              var message1 = whole.concat(message);
+              if (message1 == document.getElementById("meaning").innerHTML || document.getElementById("meaning").innerHTML == "") {
+                document.getElementById("meaning").innerHTML = message1;
+                $('#meaning').toggle();
+              } else {
+                document.getElementById("meaning").innerHTML = message1;
+              }
+          });
+        }
+        popup_for_clicked();
+        function set_used_hint(){
+          used_hint = "1";
+        }
+      </script>
+      <style>
+      .highlighted {
+        display:inline;
+        border-bottom: 5px solid aquamarine;
+      }
+      #meaning {
+        border: 5px solid aquamarine;
+      }
+      </style>
+      <!--
+      <p id='demo'></p>
+      <div class="slidercontainer" style="center;">
+        <input type="range" id="myRange" min="1" max="10" value="1" class="slider">
+      </div>
+      <script type="text/javascript">
+        var slider = document.getElementById("myRange");
+        var output = document.getElementById("demo");
+        output.innerHTML = "Score: " +slider.value; // Display the default slider value
+
+        // Update the current slider value (each time you drag the slider handle)
+        slider.oninput = function() {
+          output.innerHTML = "Score: " + this.value;
+        }
+      </script>
+      -->
+    <input id ="used_hint" name="used_hint" style = "display:none;">
+    <input id = "used_translate" name ="used_translate" style = "display:none;">
+    <input id = "used_definition" name = "used_definition" style = "display:none;">
+    <button id="check_button" type="button">Check my answer</button>
+    <input id = "check_answer" name = "check_answer" style = "display:none;" value="no">
+    <button id="submit" type="submit" form="form1" value="Submit">Submit</button>
+    </form>
+    <p>
+      {% if question_id != "1" %}
+      <figure>
+      <a href="./{{question_id | int - 1}}"><img src="../static/images/backward.png" width = "32" ><figcaption>Prev Qn</figcaption></a>
+      </figure>
+      {% endif %}
+      <figure>
+      <a href="../?show_results=true#proj1"><img src="../static/images/home.png" width = "32" ><figcaption>I'm done</figcaption></a>
+      </figure>
+      {% if question_id | int != max_qn_number  %}
+      <figure>
+      <a href="./{{question_id | int + 1}}"><img src="../static/images/forward.png" width = "32" ><figcaption>Skip Qn</figcaption></a>
+      </figure>
+      {% endif %}
+    </p>
+
+    <p> Skip to difficulty level:
+    {% if category == 'none' %}
+      {% for i in range(difficulty_levels[0] | length ) %}
+        <a href="./{{difficulty_levels[1][i]}}" >{{difficulty_levels[0][i]}} </a>
+      {% endfor %}
+    {% else %}
+      {% for i in range(difficulty_levels[0] | length ) %}
+        <a href="./{{difficulty_levels[1][i]}}" >{{difficulty_levels[0][i]}} </a>
+      {% endfor %}
+    {% endif %}
+    </p>
+    <script>
+      document.getElementById("submit").onclick = function() {
+        document.getElementById("used_hint").value = used_hint;
+        document.getElementById("used_translate").value = used_translate;
+        document.getElementById("used_definition").value = used_definition;
+      }
+      document.getElementById("check_button").onclick = function() {
+        document.getElementById("check_answer").value = "yes";
+        document.getElementById("submit").click();
+      }
+
+    </script>
+
+    {% endif %}
+    {% endblock %}
+  </body>
+</html>
